@@ -30,7 +30,7 @@ The loss function is constructed using three different metrics. Firstly, the de-
 
 Secondly, a multi-scale structural similarity index measure (MS-SSIM) score is calculated between the two images. MS-SSIM is a modified form of SSIM, which is described in detail later on. 
 
-Lastly, a novel rain-robust loss is calculated. Previous methods typically de-rain an image by directly learning a mapping to the estimated output through minimizing the image reconstruction loss between the de-rained image and the clean image. However, this approach involves exploring a large hypothesis space, which is challenging because areas covered by rain streaks are often ambiguous. In contrast, the proposed rain-robust loss attempts to constrain the hypothetical learning space. This is achieved by training the encoder to map both the rainy and clean images to an embedding space where they are closely located to each other.  
+Lastly, a novel rain-robust loss is calculated. Previous methods typically de-rain an image by directly learning a mapping to the estimated output by minimizing the image reconstruction loss between the de-rained image and the clean image. However, this approach involves exploring a large hypothesis space, which is challenging because areas covered by rain streaks are often ambiguous. In contrast, the proposed rain-robust loss attempts to constrain the hypothetical learning space. This is achieved by training the encoder to map both the rainy and clean images to an embedding space where they are closely located to each other.  
 
 Technically, this is achieved by feeding both the rainy and clean images into a shared-weight encoder before the rain-robust loss is calculated on a resulting downsampled latent vector. The loss function for a positive pair of latent vectors $z_{J_{i}}$ and $z_{I_{i}}$ is given as: 
 
@@ -38,7 +38,7 @@ $$ℓ_{z_{J_{i}} , z_{I_{i}}} = -log{exp(sim_{cos}(z_{I_{i}}, z_{J_{i}}) / {\tau
 
 where $K = \\{z_{J_{i}}, z_{I_{i}}\\} ^{N}_ {j=1, j\ne i}$ where $K$ is the combination of all possible negative pairs and $sim_{cos}(u,v) = {u^Tv \over ∥u∥∥v∥}$ is the similarity cosine between any two vectors. {\tau} is set to 0.25.
 
-Through this loss function, positive pairs are placed close together in the embedding space while negative pairs are spaced far apart. This loss-function is based on noise-contrastive estimation (NCE), specifically InfoNCE [[6]](#6). 
+Through this loss function, positive pairs are placed close together in the embedding space while negative pairs are spaced far apart. This loss function is based on noise-contrastive estimation (NCE), specifically InfoNCE [[6]](#6). 
 
 The final loss function takes the form of:
 
@@ -61,7 +61,17 @@ where $L(n)$ is the raindrop’s radiance with respect to a normal vector along 
 
 Beyond these factors, the appearance of rain streaks in real images is also influenced by motion blur and background intensities, while dense rain accumulation leads to intricate veiling effects. The interactions between these complex phenomena make it difficult to generate realistic simulations of rain effects.
 
-Real rain datasets were introduced in GT-Rain. Instead of creating rainy images from non-rainy images, rainy and non-rainy image pairs are created by scraping online live streams to find videos that include rain. There are then five pre-processing steps involved in order to produce the final positive pair. Firstly, there is a general scene selection criterion. For example, footage shot at night or with raindrops on the lens would be filtered out. Secondly, the footage must capture a definitive stop in the rain. If the rain slowly fizzles out, for example, there would be too much of a time difference between the rainy and non-rainy versions of the image. Thirdly is image cropping. A large boat moving across the screen, for example, would cause a false negative as the loss from the boat movement would completely dominate the loss caused by rain. As such, the rainy image is captured seconds before the rain stops and the non-rainy image is captured seconds after the rain stops. Fourthly, SIFT and RANSAC methods are applied in order to eliminate small camera movements between the frames caused by factors such as wind. Lastly, when necessary, elastic image registration is performed by predicting a displacement field in order to correct for factors such as leaves moving. 
+Real rain datasets were introduced in GT-Rain. Instead of creating rainy images from non-rainy images, rainy and non-rainy image pairs are created by scraping online live streams to find videos that include rain. There are then five pre-processing steps involved in order to produce the final positive pair. 
+
+First, there is a general scene selection criterion. For example, footage shot at night or with raindrops on the lens would be filtered out. 
+
+Second, the footage must capture a definitive stop in the rain. If the rain slowly fizzles out, for example, there would be too much of a time difference between the rainy and non-rainy versions of the image. 
+
+Third is image cropping. A large boat moving across the screen, for example, would cause a false negative as the loss from the boat movement would completely dominate the loss caused by rain. As such, the rainy image is captured seconds before the rain stops and the non-rainy image is captured seconds after the rain stops. 
+
+Fourth, SIFT [[13]](#11) and RANSAC [[14]](#12) methods are applied in order to eliminate small camera movements between the frames caused by factors such as wind. 
+
+Lastly, when necessary, elastic image registration is performed by predicting a displacement field in order to correct for factors such as leaves moving. 
 
 <img width="800" alt="Picture4" src="https://user-images.githubusercontent.com/61512660/235407516-6da3b738-d3b9-42fb-98cc-c46c0160263d.png">
 
@@ -74,7 +84,7 @@ While this most realistically models the complex nature of rain, the temporal as
 
 ## Results
 
-De-raining methods use peak signal-to-noise ratio (PSNR) [[11]](#11) and structural similarity index measure (SSIM) [[12]](#12) in order to assess performance. 
+De-raining methods use peak signal-to-noise ratio (PSNR) [[11]](#13) and structural similarity index measure (SSIM) [[12]](#14) in order to assess performance. 
 
 PSNR is defined by
 
@@ -104,7 +114,7 @@ Qualitatively, we can see that compared to other methods, the proposed model see
 
 <img width="710" alt="image" src="https://user-images.githubusercontent.com/61512660/235407648-36fffa91-860c-4047-8953-8aea06ad93bd.png">
 
-The study conducts four separate experiments. Firstly, other methods are trained on the dataset which they work best on and are compared to the proposed model trained on GT-Rain. Using the GT-Rain test set as a performance benchmark, we can see that the proposed model outperforms all other methods. There are two observed trends in these methods: firstly, training on more synthetic data results in improved performance, as seen in MSPFN and MPRNet. Secondly, training on semi-real data, as demonstrated in SPANet, can also enhance results. However, even when using multiple synthetic or semi-real datasets, their performance on real data is still approximately 2 dB lower than training on GT-RAIN.
+The study conducts four separate experiments. Firstly, other methods are trained on the dataset that they work best on and are compared to the proposed model trained on GT-Rain. Using the GT-Rain test set as a performance benchmark, we can see that the proposed model outperforms all other methods. There are two observed trends in these methods: firstly, training on more synthetic data results in improved performance, as seen in MSPFN and MPRNet. Secondly, training on semi-real data, as demonstrated in SPANet, can also enhance results. However, even when using multiple synthetic or semi-real datasets, their performance on real data is still approximately 2 dB lower than training on GT-RAIN.
 
 <img width="700" alt="image" src="https://user-images.githubusercontent.com/61512660/235407670-7fdbf7cb-f477-483f-b876-1953387807e8.png">
 
@@ -155,7 +165,16 @@ Li, R., Cheong, L. F., & Tan, R. T. (2019). Heavy Rain Image Restoration: Integr
 Yang, W., Tan, R. T., Feng, J., Liu, J., Guo, Z., & Yan, S. (2017). Deep Joint Rain Detection and Removal from a Single Image. Proceedings of the IEEE conference on computer vision and pattern recognition. 1357-1366.
 
 <a id="11">[11]</a> 
-Huynh-Thu, Q., & Ghanbari, M. (2008). Scope of Validity of PSNR in Image/video Quality Assessment. Electronics letters, 44(13), 800-801.
+Lowe, G. (2004). Sift-the scale invariant feature transform. Int. J, 2(91-110), 2.
+Chicago	
 
 <a id="12">[12]</a> 
+Fischler, M.A., Bolles, R.C.: Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography. Commun. ACM 24(6), 381–395 (1981)
+
+<a id="13">[13]</a> 
+Huynh-Thu, Q., & Ghanbari, M. (2008). Scope of Validity of PSNR in Image/video Quality Assessment. Electronics letters, 44(13), 800-801.
+
+<a id="14">[14]</a> 
 Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image Quality Assessment: From Error Visibility to Structural Similarity. IEEE transactions on image processing, 13(4), 600-612.
+
+
