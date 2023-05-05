@@ -81,7 +81,6 @@ While this most realistically models the complex nature of rain, the temporal as
 
 <img width="400" alt="Picture6" src="https://user-images.githubusercontent.com/61512660/235407586-1c502d94-1366-4fdf-8c7c-399fd3fc7150.png">
 
-
 ## Results
 
 De-raining methods use peak signal-to-noise ratio (PSNR) [[11]](#13) and structural similarity index measure (SSIM) [[12]](#14) in order to assess performance. 
@@ -129,6 +128,15 @@ The third experiment tests fine-tuning existing methods by further training off-
 The last experiment ran was an ablation study to confirm the effectiveness of the rain-robust loss. Two versions of the proposed models, one with and one without rain-robust loss, are trained and compared to each other. The ablation study shows that the model with rain-robust loss significantly outperforms the version without. This is corroborated by examining the latent space. The normalized correlation between rainy and non-rainy latent vectors is 0.95 +/- 0.03 with the rain-robust loss whereas it is 0.85 +/- 0.10 for the model without rain-robust loss. 
 
 <img width="700" alt="image" src="https://user-images.githubusercontent.com/61512660/235407750-3222b69f-d162-42c7-bfad-c3c06fab8caf.png">
+
+## Thoughts and Comments
+
+* 	I really like the application of de-noising technology in such a practical field. I feel like the idea that image de-raining is ill-posed is also counter-intuitively more interesting. Because there is information loss from the raindrop, the reconstruction will never be perfect (nor does a "perfect" solution even exist in this case). 
+* 	I think that the real dataset was also a very interesting method to address the sim2real gap. It seems that the real dataset was also not significantly harder to curate than a synthetic dataset.
+* 	There are some places for improvement in my opinion. Firstly, I think that the network can be further turned. The authors acknowledge this in their paper and state that there will always be improvements to test statistics as the literature advances and new techniques are discovered. It seems that the network is mostly standard apart from the rain robust loss. I would like to see how the rain robust loss works for other de-raining models that also use an encoder-decoder architecture. 
+* 	Furthermore, I feel like the authors of the paper should've tested the models on datasets outside of the GT-Rain test dataset. It would seem likely that training on the GT-Rain training dataset then testing on the GT-Rain test dataset would yield an advantage over training on a different dataset but still testing on the GT-Rain dataset. 
+* 	I also personally believe that a diffusion model would work great with the real dataset. Because of its replication abilities, I envision a classifier-guided diffusion model for the de-raining task. Taking in a rainy image as input, it can output a de-rained image with the help of a classifier. 
+* 	With regard to the actual dataset, I think that more work can be done on diversifying the dataset. By the nature of the collection method, the GT-RAin dataset mostly consists of shots of the environment. I believe that more shots resembling CCTV footage for example or shots containing human faces would help the robustness of a de-raininer.
 
 ## References
 
